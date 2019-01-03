@@ -7,7 +7,7 @@ class App extends Component {
     return (
       <div>
          <span>Hello !</span>
-         <Button>Click me!</Button>
+         <Button>Hello!</Button>
       </div>
     );
   }
