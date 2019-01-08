@@ -1,62 +1,103 @@
-import React, { Component } from 'react';
-import {Button} from 'reactstrap';
+import React ,{useState, useEffect}from 'react';
 import styled from 'styled-components';
+import { Provider,Grid } from "reakit";
+import theme from "reakit-theme-default";
+import useAxios from '@use-hooks/axios';
+import axios from 'axios';
+import moment from 'moment';
+import Category from './Components/Category'
+import Player from './Components/Player'
+import Team from './Components/Team'
+import Active from './Components/Active'
+import Games from './Components/Games'
+import Video from './Components/Video'
+import  DayCard from './Components/DayCard';
+const template = `
+  "a b b" 100px
+  "a b b" minmax(200px, 1fr)
+  "a b b" 100px / 150px
+`;
+const StyledGrid=styled(Grid)`
+     width:85%;
+     height:400px;
+     margin:10px auto;
+     border-radius:10px;
+     box-shadow:2px 3px 4px  gray;
 
-const Container=styled.div`
-  background:palegreen;
- height:100vh
- `;
-const TodoList=styled.div`
-  max-width:400px;
-  background:rgba(51, 153, 238, 0.8);
-  padding:5px;
-  border-radius:5px;
-  margin: auto;
-  box-shadow:2px 2px 2px rgba(177, 224, 212, 10.2)
-`
-const Todo=({todo})=>(
-     <div style={{alignItems:"space-around"}}>
-             <span key={todo.id}>{todo.text} 
-             </span>
-               <div  style={{display:'inline-block'}}>
-                    <Button  color="primary"style={{padding:'1px'}}>press</Button>
-                    <Button  color="success" style={{padding:'1px'}}>X</Button>
-               </div>
-     </div>
-)
 
-const StyledTodo=styled(Todo)`
-  background: #fff;
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
-  padding: 3px 10px;
-  font-size: 12px;
-  margin-bottom: 6px;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 `
 
+const SideBar=styled(Grid.Item)``;
+const Content=styled(Grid.Item)``;
 
-class App extends Component {
-  state={todos:[
-    {id:1,text:"123"},
-    {id:2,text:"123"},
-    {id:3,text:"123"},
-    {id:3,text:"123"},
+   
 
-  ]}
-  render() {
-    return (
-      <Container>
-          <TodoList>
-            {this.state.todos.map((todo,index)=>
-               <StyledTodo key={index} todo={todo}/>
-            )}
-          </TodoList>
-      </Container>
-    );
-  }
+const App=()=>{
+  const today=moment().format("YYYYMMDD");
+  const [tab,setTab]=useState("Games");
+  //const [data,setData]=useState();
+
+
+  const [day, setDay] = useState(today);
+
+  const [gamecount, setGameCount]=useState(0);
+  const {
+    response,
+    loading,
+    error,
+    query,
+  } = useAxios({
+    url: `http://data.nba.net/10s/prod/v1/${day}/scoreboard.json`,
+    method: 'GET',
+    options: {
+      params: { day },
+    },
+    trigger: day
+  });
+
+  const { data } = response || {};
+  //console.log(data);
+  //console.log(data.numGames);
+  //setGameCount(data.numGames);
+
+  
+  
+  return (
+    <Provider theme={theme}>
+    <StyledGrid template={template}>
+        <SideBar area="a" backgroundColor="rgba(39, 47, 63, 1.000)">
+           <Category setTab={setTab} activedTab={tab}></Category>
+           <DayCard times={today} gamecount={0}/>
+        </SideBar>
+        <Content area="b" backgroundColor="rgba(255, 255, 255, 1.000)">
+            { tab==='Games'&&<Games/>}
+            { tab==='Player'&&<Player/>}
+            { tab==='Team'&&<Team/>}
+            { tab==='Active'&&<Active/>}
+
+            {/* {renderSelectedTab()} */}
+         </Content>
+    </StyledGrid>
+    </Provider>
+  )
 }
 
 export default App;
+
+
+//NOTE  暂留代码
+//   const renderSelectedTab=()=>{
+//     switch (tab) {
+//      case 'Games':
+//        return <Games/>
+//      case 'Player':
+//        return <Player/>
+//      case  'Team':
+//        return <Team/>
+//      case  'Active':
+//        return <Active/>
+//       default :
+//         return <Video/>
+//    }
+   
+//  }
