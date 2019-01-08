@@ -1,16 +1,12 @@
-import React, { Component } from 'react';
-import {Button} from 'reactstrap'
+import React from 'react';
 
+import { Provider, Button } from "reakit";
+import theme from "reakit-theme-default";
 
-class App extends Component {
-  render() {
-    return (
-      <div>
-         <span>Hello !</span>
-         <Button>Click me!</Button>
-      </div>
-    );
-  }
-}
+const App = () => (
+  <Provider theme={theme}>
+    <Button>Button</Button>
+  </Provider>
+);
 
 export default App;
